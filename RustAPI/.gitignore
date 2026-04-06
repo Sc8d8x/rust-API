@@ -1,0 +1,25 @@
+
+/target
+**/target
+debug/
+
+
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+
+.env
+.env.local
+.env.*.local
+
+
+*.log
