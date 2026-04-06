@@ -9,7 +9,7 @@ use sqlx::{FromRow, PgPool};
 use std::env;
 use tokio::net::TcpListener;
 
-// - GET  /        -> healthcheck/приветствие
+// - GET  /        -> healthcheck
 // - GET  /items   -> список items из БД
 // - POST /items   -> создать item
 
@@ -98,7 +98,7 @@ async fn main() {
         .route("/items", get(list_items).post(create_item))
         .with_state(state);
 
-    // Слушаем локально порт 3000.
+
     let listener = TcpListener::bind("127.0.0.1:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
