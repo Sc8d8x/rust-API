@@ -9,12 +9,9 @@ use sqlx::{FromRow, PgPool};
 use std::env;
 use tokio::net::TcpListener;
 
-// Простой пример API на axum + sqlx(Postgres):
 // - GET  /        -> healthcheck/приветствие
 // - GET  /items   -> список items из БД
 // - POST /items   -> создать item
-//
-// Таблица создаётся миграцией  
 
 #[derive(Serialize, FromRow)]
 struct Item {
@@ -28,8 +25,6 @@ struct RequestItem {
     description: String,
 }
 
-// Состояние приложения, доступное в хендлерах через `State(...)`.
-// PgPool — это пул подключений; его безопасно клонировать и шарить между запросами.
 #[derive(Clone)]
 struct AppState {
     db: PgPool,
@@ -44,7 +39,7 @@ fn internal_error<E: std::fmt::Display>(e: E) -> (StatusCode, String) {
     (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
 }
 
-// Возвращает все строки из `items`.
+// возвращает все строки из `items`.
 async fn list_items(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<Item>>, (StatusCode, String)> {
@@ -62,7 +57,7 @@ async fn list_items(
     Ok(Json(items))
 }
 
-// Создаёт новую строку в `items` и возвращает созданный объект.
+// создаём новую строку в `items` и возвращает созданный объект.
 async fn create_item(
     State(state): State<AppState>,
     Json(payload): Json<RequestItem>,
@@ -85,10 +80,10 @@ async fn create_item(
 
 #[tokio::main]
 async fn main() {
-    // Загружает переменные из `.env` в окружение процесса (если файл есть).
+    // загружает переменные из `.env` в окружение процесса (если файл есть).
     dotenvy::dotenv().ok();
 
-    // Стандартная переменная для Postgres в экосистеме Rust/SQLx.
+    // стандартная переменная для Postgre
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set");
 
     let db = PgPool::connect(&database_url)
@@ -97,7 +92,7 @@ async fn main() {
     
     let state = AppState { db };
     
-    // Роуты + состояние приложения.
+    // роуты + состояние приложения.
     let app = Router::new()
         .route("/", get(root))
         .route("/items", get(list_items).post(create_item))
